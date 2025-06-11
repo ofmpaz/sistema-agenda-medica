@@ -1,0 +1,19 @@
+# tipo: descrição curta
+#
+# Tipos:
+#   feat:     nova funcionalidade
+#   fix:      correção de bug
+#   docs:     atualização de documentação
+#   style:    formatação, identação, etc (sem mudança de lógica)
+#   refactor: refatoração sem mudar comportamento
+#   test:     adição/modificação de testes
+#   chore:    manutenção, build, configs, etc
+#
+# Exemplo:
+# feat: adiciona endpoint de criação de consulta
+#
+# Corpo opcional:
+#
+# - Explique a motivação da mudança, o contexto e decisões técnicas.
+# - Use o imperativo: "adiciona", "remove", "refatora", "cria", etc.
+# - Mantenha até 72 caracteres na linha do título.

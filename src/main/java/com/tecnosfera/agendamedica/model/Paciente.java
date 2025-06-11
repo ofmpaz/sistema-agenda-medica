@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "paciente")
-public class Paciente {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Paciente extends Usuario {
 
     @Column(nullable = false)
     private int idade;
