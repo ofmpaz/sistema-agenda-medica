@@ -1,4 +1,4 @@
-package com.tecnosfera.agendamedica.dto;
+package com.tecnosfera.agendamedica.dto.pacienteDTO;
 
 import jakarta.validation.constraints.*;
 
