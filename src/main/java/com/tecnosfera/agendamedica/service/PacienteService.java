@@ -1,6 +1,7 @@
 package com.tecnosfera.agendamedica.service;
 
-import com.tecnosfera.agendamedica.dto.PacienteCadastroDTO;
+import com.tecnosfera.agendamedica.dto.pacienteDTO.PacienteCadastroDTO;
+import com.tecnosfera.agendamedica.dto.pacienteDTO.PacienteListagemDTO;
 import com.tecnosfera.agendamedica.infra.exception.RegraDeNegocioException;
 import com.tecnosfera.agendamedica.model.Paciente;
 import com.tecnosfera.agendamedica.repository.PacienteRepository;
@@ -8,6 +9,8 @@ import com.tecnosfera.agendamedica.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -44,6 +47,15 @@ public class PacienteService {
             logger.info("Paciente com CPF: {} cadastrado com sucesso! ID: " +
                     "{}", dadosPacienteDTO.cpf(), paciente.getId());
         }
+    }
+
+    public List<PacienteListagemDTO> listagemDePaciente() {
+        List<Paciente> pacientes = pacienteRepository.findAll();
+        List<PacienteListagemDTO> dtos = pacientes.stream()
+                .map(PacienteListagemDTO::new)
+                .toList();
+        logger.info("Finalizada listagem de pacientes. Total de {} registros encontrados.", dtos.size());
+        return dtos;
     }
 }
 
