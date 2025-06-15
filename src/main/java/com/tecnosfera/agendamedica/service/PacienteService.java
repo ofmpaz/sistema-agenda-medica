@@ -1,7 +1,7 @@
 package com.tecnosfera.agendamedica.service;
 
-import com.tecnosfera.agendamedica.dto.pacienteDTO.PacienteCadastroDTO;
-import com.tecnosfera.agendamedica.dto.pacienteDTO.PacienteListagemDTO;
+import com.tecnosfera.agendamedica.dto.pacientedto.PacienteCadastroDTO;
+import com.tecnosfera.agendamedica.dto.pacientedto.PacienteListagemDTO;
 import com.tecnosfera.agendamedica.infra.exception.RegraDeNegocioException;
 import com.tecnosfera.agendamedica.model.Paciente;
 import com.tecnosfera.agendamedica.repository.PacienteRepository;

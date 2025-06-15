@@ -1,4 +1,4 @@
-package com.tecnosfera.agendamedica.dto.MedicoDTO;
+package com.tecnosfera.agendamedica.dto.medicodto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.tecnosfera.agendamedica.dto.pacienteDTO;
+package com.tecnosfera.agendamedica.dto.pacientedto;
 
 import com.tecnosfera.agendamedica.model.Paciente;
 
