@@ -23,5 +23,5 @@ public class Paciente extends Usuario {
     @Max(120)
     @Column(nullable = false)
     @NotNull
-    private int idade;
+    private Integer idade;
 }
