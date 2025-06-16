@@ -1,5 +1,6 @@
 package com.tecnosfera.agendamedica.service;
 
+import com.tecnosfera.agendamedica.dto.pacientedto.PacienteAtualizarDTO;
 import com.tecnosfera.agendamedica.dto.pacientedto.PacienteCadastroDTO;
 import com.tecnosfera.agendamedica.dto.pacientedto.PacienteDetalhamentoDTO;
 import com.tecnosfera.agendamedica.dto.pacientedto.PacienteListagemDTO;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,27 +44,30 @@ public class PacienteService {
      * @return DTO com os dados detalhados do paciente recém-criado.
      * @throws RegraDeNegocioException Lançada se o CPF ou o e-mail informados já estiverem cadastrados.
      */
-    public void cadastrarPaciente(PacienteCadastroDTO dadosPacienteDTO) {
-        logger.info("Iniciando cadastro de Paciente");
+
+    @Transactional
+    public PacienteDetalhamentoDTO cadastrarPaciente(PacienteCadastroDTO dadosPacienteDTO) {
+        logger.info("Iniciando processo de cadastro de Paciente com CPF: {}", dadosPacienteDTO.cpf());
 
         if (usuarioRepository.findByCpf(dadosPacienteDTO.cpf()).isPresent()) {
             throw new RegraDeNegocioException("CPF já está cadastrado");
         }
         if (usuarioRepository.findByEmail(dadosPacienteDTO.email()).isPresent()) {
             throw new RegraDeNegocioException("Email já está cadastrado");
-        } else {
-            var paciente = Paciente.builder()
-                    .nomeCompleto(dadosPacienteDTO.nomeCompleto())
-                    .cpf(dadosPacienteDTO.cpf())
-                    .email(dadosPacienteDTO.email())
-                    .telefone(dadosPacienteDTO.telefone())
-                    .idade(dadosPacienteDTO.idade())
-                    .build();
-
-            pacienteRepository.save(paciente);
-            logger.info("Paciente com CPF: {} cadastrado com sucesso! ID: " +
-                    "{}", dadosPacienteDTO.cpf(), paciente.getId());
         }
+        var paciente = Paciente.builder()
+                .nomeCompleto(dadosPacienteDTO.nomeCompleto())
+                .cpf(dadosPacienteDTO.cpf())
+                .email(dadosPacienteDTO.email())
+                .telefone(dadosPacienteDTO.telefone())
+                .idade(dadosPacienteDTO.idade())
+                .build();
+
+        pacienteRepository.save(paciente);
+        logger.info("Paciente com CPF: {} cadastrado com sucesso! ID: {}",
+                dadosPacienteDTO.cpf(), paciente.getId());
+
+        return new PacienteDetalhamentoDTO(paciente);
     }
 
     /**
@@ -70,7 +75,8 @@ public class PacienteService {
      *
      * @return Uma {@link List} de {@link PacienteListagemDTO}.
      */
-    public List<PacienteListagemDTO> listagemDePaciente() {
+    @Transactional
+    public List<PacienteListagemDTO> listarTodos() {
         List<Paciente> pacientes = pacienteRepository.findAll();
         List<PacienteListagemDTO> dtos = pacientes.stream()
                 .map(PacienteListagemDTO::new)
@@ -87,6 +93,7 @@ public class PacienteService {
      * @throws EntityNotFoundException Lançada se nenhum usuário for encontrado com o CPF informado.
      * @throws RegraDeNegocioException Lançada se o CPF informado pertencer a um Médico e não a um Paciente.
      */
+    @Transactional
     public PacienteDetalhamentoDTO buscarPorCpf(String cpf) {
         var usuario = usuarioRepository.findByCpf(cpf)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o CPF informado."));
@@ -97,6 +104,40 @@ public class PacienteService {
 
         logger.info("Paciente com CPF {} encontrado.", cpf);
         return new PacienteDetalhamentoDTO((Paciente) usuario);
+    }
+
+    @Transactional
+    public PacienteDetalhamentoDTO atualizarInformacoes(PacienteAtualizarDTO dados) {
+        logger.info("Iniciando atualização para o paciente de ID: {}", dados.id());
+
+        var paciente = pacienteRepository.getReferenceById(dados.id());
+
+        if (dados.nomeCompleto() != null) {
+            paciente.setNomeCompleto(dados.nomeCompleto());
+        }
+        if (dados.email() != null) {
+            var usuarioComNovoEmail = usuarioRepository.findByEmail(dados.email());
+            if (usuarioComNovoEmail.isPresent() && !usuarioComNovoEmail.get().getId().equals(paciente.getId())) {
+                throw new RegraDeNegocioException("Este e-mail já está em uso por outro usuário.");
+            }
+            paciente.setEmail(dados.email());
+        }
+        if (dados.telefone() != null) {
+            paciente.setTelefone(dados.telefone());
+        }
+        if (dados.idade() != null) {
+            paciente.setIdade(dados.idade());
+        }
+
+        logger.info("Paciente de ID: {} atualizado com sucesso.", dados.id());
+        return new PacienteDetalhamentoDTO(paciente);
+    }
+
+    @Transactional
+    public void excluir(Long id) {
+        var paciente = pacienteRepository.getReferenceById(id);
+        pacienteRepository.delete(paciente);
+        logger.info("Paciente de ID: {} marcado como inativo com sucesso.", id);
     }
 }
 
